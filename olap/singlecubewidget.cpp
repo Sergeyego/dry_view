@@ -1,10 +1,10 @@
 #include "singlecubewidget.h"
 
 
-SingleCubeWidget::SingleCubeWidget(QString head, QStringList axes, QString qu, int dec, QWidget *parent) :CubeWidget(head,axes,parent), query(qu)
+SingleCubeWidget::SingleCubeWidget(QString head, QStringList axes, QString qu, int dec, QWidget *parent) :CubeWidget(head,axes,qu, dec, parent), query(qu)
 {
     olapmodel = new OlapModel(axes,dec,this);
-    this->getView()->setModel(olapmodel);
+    getViewer()->setModel(olapmodel);
     updQuery();
 
     connect(this,SIGNAL(sigUpdX(QStringList)),olapmodel,SLOT(setX(QStringList)));
@@ -14,7 +14,7 @@ SingleCubeWidget::SingleCubeWidget(QString head, QStringList axes, QString qu, i
     connect(this,SIGNAL(sigMin(bool)),olapmodel,SLOT(setTypeMin(bool)));
     connect(this,SIGNAL(sigMax(bool)),olapmodel,SLOT(setTypeMax(bool)));
 
-    connect(olapmodel,SIGNAL(sigRefresh()),this->getView(),SLOT(resizeToContents()));
+    connect(olapmodel,SIGNAL(sigRefresh()),this->getViewer(),SLOT(resizeToContents()));
 }
 
 void SingleCubeWidget::updQuery()

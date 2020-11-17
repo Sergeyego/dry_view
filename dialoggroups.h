@@ -2,7 +2,7 @@
 #define DIALOGGROUPS_H
 
 #include <QDialog>
-#include "dbtablemodel.h"
+#include "db/dbtablemodel.h"
 
 namespace Ui {
 class DialogGroups;

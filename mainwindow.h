@@ -9,8 +9,8 @@
 #include "plotdata.h"
 #include <qwt_plot_renderer.h>
 #include "cfgowendialog.h"
-#include "singlecubewidget.h"
-#include "doublecubewidget.h"
+#include "olap/singlecubewidget.h"
+#include "olap/doublecubewidget.h"
 #include "dialoggroups.h"
 #include <QPrinter>
 #include <QPrintDialog>

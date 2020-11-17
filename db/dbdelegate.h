@@ -1,17 +1,18 @@
-#ifndef QCOMBODELEGATE_H
-#define QCOMBODELEGATE_H
+#ifndef DBDELEGATE_H
+#define DBDELEGATE_H
 #include <QtGui>
 #include <QtSql>
 #include "dbtablemodel.h"
 #include <QDateEdit>
 #include <QCompleter>
 #include <QCalendarWidget>
+#include <QLineEdit>
 
-class CbRelationDelegate : public QItemDelegate
+class DbDelegate : public QItemDelegate
 {
     Q_OBJECT
 public:
-     CbRelationDelegate(QObject *parent = 0);
+     DbDelegate(QObject *parent = 0);
      QWidget *createEditor(
                  QWidget *parent,
                  const QStyleOptionViewItem &option,
@@ -26,7 +27,10 @@ public:
              const QStyleOptionViewItem &option,
              const QModelIndex &index) const;
      bool eventFilter(QObject *object, QEvent *event);
- };
+
+signals:
+     void createEdt(const QModelIndex index) const;
+};
 
 class CustomCompletter : public QCompleter
 {
@@ -37,4 +41,30 @@ public:
 
 };
 
-#endif // QCOMBODELEGATE_H
+class ComboLineEdit : public QLineEdit
+{
+    Q_OBJECT
+public:
+    explicit ComboLineEdit(QWidget *parent = 0);
+    void keyPressEvent(QKeyEvent *e);
+};
+
+class CustomCalendarWidget : public QCalendarWidget
+{
+    Q_OBJECT
+public:
+    CustomCalendarWidget(QWidget *parent = 0);
+    virtual void showEvent(QShowEvent *event);
+signals:
+    void shown();
+};
+
+class CustomDateEdit : public QDateEdit{
+    Q_OBJECT
+public:
+    CustomDateEdit(QWidget *parent=0);
+private slots:
+    void txtChangeSlot(QString txt);
+    void shVid();
+};
+#endif // DBDELEGATE_H

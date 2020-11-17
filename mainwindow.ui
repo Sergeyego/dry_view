@@ -109,7 +109,7 @@
           </widget>
          </item>
          <item>
-          <widget class="ProcViewer" name="tableViewDry">
+          <widget class="DbViewer" name="tableViewDry">
            <property name="selectionMode">
             <enum>QAbstractItemView::SingleSelection</enum>
            </property>
@@ -381,8 +381,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>476</width>
-              <height>605</height>
+              <width>478</width>
+              <height>606</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -422,7 +422,7 @@
      <x>0</x>
      <y>0</y>
      <width>1000</width>
-     <height>20</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -528,14 +528,14 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ProcViewer</class>
+   <class>DbViewer</class>
    <extends>QTableView</extends>
-   <header>widgets.h</header>
+   <header>db/dbviewer.h</header>
   </customwidget>
   <customwidget>
    <class>DateEdit</class>
    <extends>QDateEdit</extends>
-   <header>viewer.h</header>
+   <header>db/dbviewer.h</header>
   </customwidget>
  </customwidgets>
  <resources>

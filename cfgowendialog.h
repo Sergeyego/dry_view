@@ -2,8 +2,8 @@
 #define CFGOWENDIALOG_H
 
 #include <QDialog>
-#include "dbtablemodel.h"
-#include "pushform.h"
+#include "db/dbtablemodel.h"
+#include "db/dbmapper.h"
 #include "delegate.h"
 
 namespace Ui {
@@ -23,7 +23,7 @@ private:
     DbRelation *relGroups;
     DbTableModel *modelOven;
     DbTableModel *modelChannel;
-    PushForm *push;
+    DbMapper *push;
 private slots:
     void setCurrentOven(QModelIndex index);
 };

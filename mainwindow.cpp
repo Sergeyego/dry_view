@@ -205,7 +205,7 @@ void MainWindow::anDryKvo()
                   "where r.dt_beg between :d1 and :d2");
     SingleCubeWidget *kvoCube = new SingleCubeWidget(tr("Количество прокалок"),axes,query,0);
     kvoCube->show();
-    connect(kvoCube,SIGNAL(sigClose()),kvoCube,SLOT(deleteLater()));
+    //connect(kvoCube,SIGNAL(sigClose()),kvoCube,SLOT(deleteLater()));
 }
 
 void MainWindow::anDryEnerg()
@@ -232,7 +232,7 @@ void MainWindow::anDryEnerg()
                   "where r.dt_beg between :d1 and :d2");
     SingleCubeWidget *energCube = new SingleCubeWidget(tr("Расход электрической энергии на прокалку, кВт*ч"),axes,query,3);
     energCube->show();
-    connect(energCube,SIGNAL(sigClose()),energCube,SLOT(deleteLater()));
+    //connect(energCube,SIGNAL(sigClose()),energCube,SLOT(deleteLater()));
 }
 
 void MainWindow::anDryMas()
@@ -259,7 +259,7 @@ void MainWindow::anDryMas()
                   "where r.dt_beg between :d1 and :d2");
     SingleCubeWidget *masCube = new SingleCubeWidget(tr("Прокалка электродов, тонн"),axes,query,3);
     masCube->show();
-    connect(masCube,SIGNAL(sigClose()),masCube,SLOT(deleteLater()));
+    //connect(masCube,SIGNAL(sigClose()),masCube,SLOT(deleteLater()));
 }
 
 void MainWindow::anDryEnergKg()
@@ -297,7 +297,7 @@ void MainWindow::anDryEnergKg()
                    "where r.dt_beg between :d1 and :d2");
     DoubleCubeWidget *kgCube = new DoubleCubeWidget(tr("Расход электрической энергии на прокалку, кВт*ч/кг"),axes,query1,query2,3);
     kgCube->show();
-    connect(kgCube,SIGNAL(sigClose()),kgCube,SLOT(deleteLater()));
+    //connect(kgCube,SIGNAL(sigClose()),kgCube,SLOT(deleteLater()));
 }
 
 void MainWindow::anSushKvo()
@@ -322,7 +322,7 @@ void MainWindow::anSushKvo()
                   "order by dat_time");
     SingleCubeWidget *masCube = new SingleCubeWidget(tr("Сушка электродов, стопки"),axes,query,0);
     masCube->show();
-    connect(masCube,SIGNAL(sigClose()),masCube,SLOT(deleteLater()));
+    //connect(masCube,SIGNAL(sigClose()),masCube,SLOT(deleteLater()));
 }
 
 void MainWindow::anSushEnerg()
@@ -347,7 +347,7 @@ void MainWindow::anSushEnerg()
                   "order by dat_time");
     SingleCubeWidget *masCube = new SingleCubeWidget(tr("Расход энергии на сушку электродов, кВт*ч"),axes,query,0);
     masCube->show();
-    connect(masCube,SIGNAL(sigClose()),masCube,SLOT(deleteLater()));
+    //connect(masCube,SIGNAL(sigClose()),masCube,SLOT(deleteLater()));
 }
 
 void MainWindow::setOst(bool b)

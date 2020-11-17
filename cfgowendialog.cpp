@@ -8,29 +8,29 @@ CfgOwenDialog::CfgOwenDialog(QWidget *parent) :
     ui->setupUi(this);
     relGroups = new DbRelation(new DbRelationalModel("select id, nam from owens_groups order by id",this),0,1,this);
     modelOven = new DbTableModel("owens",this);
-    modelOven->addColumn("id","id",true,true,TYPE_INT);
-    modelOven->addColumn("num",tr("Название"),false,false,TYPE_STRING);
-    modelOven->addColumn("tip",tr("Тип"),false,false,TYPE_STRING);
-    modelOven->addColumn("host",tr("Хост"),false,false,TYPE_STRING);
-    modelOven->addColumn("tcp_port",tr("Порт"),false,false,TYPE_INT,new QIntValidator(1,65535,this));
-    modelOven->addColumn("addr",tr("Адрес"),false,false,TYPE_INT,new QIntValidator(0,65535,this));
-    modelOven->addColumn("pwr",tr("Мощность"),false,false,TYPE_DOUBLE,new QDoubleValidator(0,999999999,3,this));
-    modelOven->addColumn("pwr_cool",tr("Мощность вент"),false,false,TYPE_DOUBLE,new QDoubleValidator(0,999999999,3,this));
-    modelOven->addColumn("id_group",tr("Группа"),false,false,TYPE_STRING,NULL,relGroups);
+    modelOven->addColumn("id","id");
+    modelOven->addColumn("num",tr("Название"));
+    modelOven->addColumn("tip",tr("Тип"));
+    modelOven->addColumn("host",tr("Хост"));
+    modelOven->addColumn("tcp_port",tr("Порт"));
+    modelOven->addColumn("addr",tr("Адрес"));
+    modelOven->addColumn("pwr",tr("Мощность"));
+    modelOven->addColumn("pwr_cool",tr("Мощность вент"));
+    modelOven->addColumn("id_group",tr("Группа"),relGroups);
     modelOven->setSort("owens.num");
     modelOven->select();
 
     modelChannel = new DbTableModel("owens_trm_channel",this);
-    modelChannel->addColumn("id_owen",tr("id_owen"),false,false,TYPE_INT);
-    modelChannel->addColumn("id",tr("Id"),true,true,TYPE_INT,new QIntValidator(this));
-    modelChannel->addColumn("number",tr("Номер"),false,false,TYPE_INT,new QIntValidator(this));
-    modelChannel->addColumn("nam",tr("Название"),false,false,TYPE_STRING);
-    modelChannel->addColumn("is_main",tr("Главный"),false,false,TYPE_BOOL);
-    modelChannel->addColumn("color_ust",tr("Уставка"),false,false,TYPE_STRING);
-    modelChannel->addColumn("color_val",tr("Значение"),false,false,TYPE_STRING);
-    modelChannel->addColumn("pwr",tr("Мощность"),false,false,TYPE_DOUBLE,new QDoubleValidator(0,1000,1,this));
-    modelChannel->addColumn("k_ust",tr("Коэф. уст."),false,false,TYPE_DOUBLE,new QDoubleValidator(0,10,3,this));
-    modelChannel->addColumn("is_enabled",tr("Включен"),false,false,TYPE_BOOL);
+    modelChannel->addColumn("id_owen",tr("id_owen"));
+    modelChannel->addColumn("id",tr("Id"));
+    modelChannel->addColumn("number",tr("Номер"));
+    modelChannel->addColumn("nam",tr("Название"));
+    modelChannel->addColumn("is_main",tr("Главный"));
+    modelChannel->addColumn("color_ust",tr("Уставка"));
+    modelChannel->addColumn("color_val",tr("Значение"));
+    modelChannel->addColumn("pwr",tr("Мощность"));
+    modelChannel->addColumn("k_ust",tr("Коэф. уст."));
+    modelChannel->addColumn("is_enabled",tr("Включен"));
 
     modelChannel->setSort("owens_trm_channel.number, owens_trm_channel.nam");
 
@@ -51,7 +51,7 @@ CfgOwenDialog::CfgOwenDialog(QWidget *parent) :
 
     ui->listViewOven->setModel(modelOven);
     ui->listViewOven->setModelColumn(1);
-    push = new PushForm(ui->listViewOven,this);
+    push = new DbMapper(ui->listViewOven,this);
     ui->verticalLayout->addWidget(push);
     push->addMapping(ui->lineEditId,0);
     push->addMapping(ui->lineEditNum,1);

@@ -159,7 +159,7 @@
         </widget>
        </item>
        <item>
-        <widget class="Viewer" name="tableViewCh"/>
+        <widget class="DbViewer" name="tableViewCh"/>
        </item>
        <item>
         <spacer name="verticalSpacer">
@@ -182,9 +182,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Viewer</class>
+   <class>DbViewer</class>
    <extends>QTableView</extends>
-   <header>viewer.h</header>
+   <header>db/dbviewer.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>

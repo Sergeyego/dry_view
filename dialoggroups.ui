@@ -15,15 +15,15 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="Viewer" name="tableView"/>
+    <widget class="DbViewer" name="tableView"/>
    </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Viewer</class>
+   <class>DbViewer</class>
    <extends>QTableView</extends>
-   <header>viewer.h</header>
+   <header>db/dbviewer.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -1,9 +1,9 @@
 #include "doublecubewidget.h"
 
-DoubleCubeWidget::DoubleCubeWidget(QString head, QStringList axes, QString qu1, QString qu2, int dec, QWidget *parent) : CubeWidget(head,axes,parent), query1(qu1), query2(qu2)
+DoubleCubeWidget::DoubleCubeWidget(QString head, QStringList axes, QString qu1, QString qu2, int dec, QWidget *parent) : CubeWidget(head,axes,qu1,dec,parent), query1(qu1), query2(qu2)
 {
     olapmodel = new DoubleOlapModel(axes,dec,this);
-    this->getView()->setModel(olapmodel);
+    getViewer()->setModel(olapmodel);
     updQuery();
 
     connect(this,SIGNAL(sigUpdX(QStringList)),olapmodel,SLOT(setX(QStringList)));
@@ -13,7 +13,7 @@ DoubleCubeWidget::DoubleCubeWidget(QString head, QStringList axes, QString qu1, 
     connect(this,SIGNAL(sigMin(bool)),olapmodel,SLOT(setTypeMin(bool)));
     connect(this,SIGNAL(sigMax(bool)),olapmodel,SLOT(setTypeMax(bool)));
 
-    connect(olapmodel,SIGNAL(sigRefresh()),this->getView(),SLOT(resizeToContents()));
+    connect(olapmodel,SIGNAL(sigRefresh()),this->getViewer(),SLOT(resizeToContents()));
 }
 
 void DoubleCubeWidget::updQuery()

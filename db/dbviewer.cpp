@@ -1,36 +1,46 @@
-#include "viewer.h"
+#include "dbviewer.h"
 
-Viewer::Viewer(QWidget *parent) :
+DbViewer::DbViewer(QWidget *parent) :
     QTableView(parent)
 {
     setSelectionMode(QAbstractItemView::SingleSelection);
     menuEnabled=true;
     verticalHeader()->setDefaultSectionSize(verticalHeader()->fontMetrics().height()*1.5);
-    updAct = new QAction(tr("Обновить"),this);
-    removeAct = new QAction(tr("Удалить"),this);
-    saveAct = new QAction(tr("Сохранить"),this);
-    this->setAutoScroll(true);
-    this->setItemDelegate(new CbRelationDelegate(this));
-    writeOk=true;
+    verticalHeader()->setFixedWidth(verticalHeader()->fontMetrics().height()*1.2);
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+#endif
+
+    updAct = new QAction(QString::fromUtf8("Обновить"),this);
+    removeAct = new QAction(QString::fromUtf8("Удалить"),this);
+    this->setAutoScroll(true);
+    this->setItemDelegate(new DbDelegate(this));
+    writeOk=true;
     connect(updAct,SIGNAL(triggered()),this,SLOT(upd()));
     connect(removeAct,SIGNAL(triggered()),this,SLOT(remove()));
 }
 
-void Viewer::setModel(QAbstractItemModel *model)
+void DbViewer::setModel(QAbstractItemModel *model)
 {
     QTableView::setModel(model);
-    connect(this->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(submit(QModelIndex,QModelIndex)));
+    DbTableModel *sqlModel = qobject_cast<DbTableModel *>(this->model());
+    if (sqlModel){
+        disconnect(selectionModel(), SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this->model(), SLOT(submit()));
+        connect(this->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(submit(QModelIndex,QModelIndex)));
+    } else {
+        setMenuEnabled(false);
+    }
 }
 
-void Viewer::setColumnsWidth(QVector<int> width)
+void DbViewer::setColumnsWidth(QVector<int> width)
 {
     for (int i=0; i<width.size(); i++){
         setColumnWidth(i,width[i]);
     }
 }
 
-void Viewer::keyPressEvent(QKeyEvent *e)
+void DbViewer::keyPressEvent(QKeyEvent *e)
 {
     DbTableModel *sqlModel = qobject_cast<DbTableModel *>(this->model());
     if (sqlModel && this->editTriggers()!=QAbstractItemView::NoEditTriggers){
@@ -45,14 +55,16 @@ void Viewer::keyPressEvent(QKeyEvent *e)
             }
             case Qt::Key_Escape:
             {
-                sqlModel->escAdd();
+                sqlModel->revert();
                 break;
             }
             case Qt::Key_Down:
             {
                 if ((row==c-1) || !c){
+                    if (sqlModel->isEdt()){
+                        sqlModel->submit();
+                    }
                     sqlModel->insertRow(sqlModel->rowCount());
-                    scrollToBottom();
                 }
                 QTableView::keyPressEvent(e);
                 break;
@@ -74,11 +86,14 @@ void Viewer::keyPressEvent(QKeyEvent *e)
                 }
 
                 if ((currentIndex().column()==j) && (row==sqlModel->rowCount()-1)) {
+                    if (sqlModel->isEdt()){
+                        sqlModel->submit();
+                    }
                     sqlModel->insertRow(sqlModel->rowCount());
-                    setCurrentIndex(this->model()->index(sqlModel->rowCount()-1,i));
-                } else
-                    //this->setCurrentIndex(this->moveCursor(this->MoveNext,Qt::NoModifier));
                     QTableView::keyPressEvent(e);
+                } else {
+                    QTableView::keyPressEvent(e);
+                }
                 break;
             }
             default:
@@ -88,26 +103,34 @@ void Viewer::keyPressEvent(QKeyEvent *e)
             }
         }
 
-    } else
+    } else {
         QTableView::keyPressEvent(e);
+    }
 }
 
 
-void Viewer::upd()
+void DbViewer::upd()
 {
     DbTableModel *sqlModel = qobject_cast<DbTableModel *>(this->model());
-    if (sqlModel) sqlModel->select();
+    if (sqlModel) {
+        sqlModel->select();
+    }
 }
 
-void Viewer::remove()
+void DbViewer::remove()
 {
     DbTableModel *sqlModel = qobject_cast<DbTableModel *>(this->model());
     QModelIndex ind=this->currentIndex();
-    if (sqlModel && sqlModel->rowCount() && sqlModel->removeRow(ind.row()))
-        setCurrentIndex(model()->index(ind.row()-1,ind.column()));
+    if (sqlModel && sqlModel->rowCount() && sqlModel->removeRow(ind.row())){
+        if (ind.row()>0){
+            setCurrentIndex(model()->index(ind.row()-1,ind.column()));
+        } else if (sqlModel->rowCount()){
+            setCurrentIndex(model()->index(ind.row(),ind.column()));
+        }
+    }
 }
 
-void Viewer::submit(QModelIndex ind, QModelIndex oldInd)
+void DbViewer::submit(QModelIndex /*ind*/, QModelIndex oldInd)
 {
     if (this->editTriggers()==QAbstractItemView::NoEditTriggers) return;
     DbTableModel *sqlModel = qobject_cast<DbTableModel *>(this->model());
@@ -116,38 +139,42 @@ void Viewer::submit(QModelIndex ind, QModelIndex oldInd)
             writeOk=true;
             return;
         }
-        if (sqlModel->isAdd() && !sqlModel->isEdt() && oldInd.row()!=sqlModel->rowCount()-2)
-            sqlModel->escAdd();
-        else if ((sqlModel->isEdt() && !sqlModel->isAdd()) || (sqlModel->isAdd() && ind.row()!=sqlModel->rowCount()-1)){
-            writeOk=sqlModel->submitRow();
-            }
+        if (sqlModel->isEdt() || (sqlModel->isAdd() && oldInd.row()==sqlModel->currentEdtRow())){
+            writeOk=sqlModel->submit();
+        }
     }
 }
 
-void Viewer::focusOutEvent(QFocusEvent *event)
+void DbViewer::focusOutEvent(QFocusEvent *event)
 {
     if (this->editTriggers()!=QAbstractItemView::NoEditTriggers && event->reason()==Qt::MouseFocusReason){
         DbTableModel *sqlModel = qobject_cast<DbTableModel *>(this->model());
-        if (sqlModel && sqlModel->isAdd() && !sqlModel->isEdt()) sqlModel->escAdd();
+        if (sqlModel && sqlModel->isAdd() && !sqlModel->isEdt()){
+            sqlModel->revert();
+        }
     }
     return QTableView::focusOutEvent(event);
 }
 
-void Viewer::setMenuEnabled(bool value)
+void DbViewer::setMenuEnabled(bool value)
 {
     menuEnabled=value;
 }
 
-void Viewer::contextMenuEvent(QContextMenuEvent *event)
+void DbViewer::contextMenuEvent(QContextMenuEvent *event)
 {
-    QMenu menu(this);
     if (menuEnabled){
+        QMenu menu(this);
         menu.addAction(updAct);
         menu.addSeparator();
-        menu.addAction(removeAct);
-        menu.addSeparator();
+        if (this->selectionModel()){
+            if (this->indexAt(event->pos()).isValid()){
+                menu.addAction(removeAct);
+                menu.addSeparator();
+            }
+        }
+        menu.exec(event->globalPos());
     }
-    menu.exec(event->globalPos());
 }
 
 DateEdit::DateEdit(QWidget *parent): QDateEdit(parent)
@@ -156,4 +183,5 @@ DateEdit::DateEdit(QWidget *parent): QDateEdit(parent)
     QCalendarWidget * pCW = new QCalendarWidget(this);
     pCW->setFirstDayOfWeek( Qt::Monday );
     this->setCalendarWidget( pCW );
+    this->setDisplayFormat("dd.MM.yy");
 }

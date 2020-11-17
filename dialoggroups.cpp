@@ -7,8 +7,8 @@ DialogGroups::DialogGroups(QWidget *parent) :
 {
     ui->setupUi(this);
     modelGroup = new DbTableModel("owens_groups",this);
-    modelGroup->addColumn("id",tr("id"),true,true,TYPE_INT);
-    modelGroup->addColumn("nam",tr("Название"),false,false,TYPE_STRING);
+    modelGroup->addColumn("id",tr("id"));
+    modelGroup->addColumn("nam",tr("Название"));
     modelGroup->setSort("owens_groups.id");
     modelGroup->select();
     ui->tableView->setModel(modelGroup);
