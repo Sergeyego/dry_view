@@ -4,24 +4,26 @@
 CubeWidget::CubeWidget(QString head, QStringList axes, QString qu, int dec, QWidget *parent) :
     QWidget(parent)
 {
-    inital(head,axes,qu,dec);
+    he=head;
+    ax=axes;
+    query=qu;
+    d=dec;
+    inital();
 }
 
 CubeWidget::CubeWidget(int id_cube, QWidget *parent) :
     QWidget(parent)
 {
-    QString nam, qu, cols;
-    QStringList axes;
-    int dec=3;
-    QSqlQuery query;
-    query.prepare("select nam, columns, query, dc from olaps where id= :id");
-    query.bindValue(":id",id_cube);
-    if (query.exec()){
-        while (query.next()){
-            nam=query.value(0).toString();
-            cols=query.value(1).toString();
-            qu=query.value(2).toString();
-            dec=query.value(3).toInt();
+    QString cols;
+    QSqlQuery qu;
+    qu.prepare("select nam, columns, query, dc from olaps where id= :id");
+    qu.bindValue(":id",id_cube);
+    if (qu.exec()){
+        while (qu.next()){
+            he=qu.value(0).toString();
+            cols=qu.value(1).toString();
+            query=qu.value(2).toString();
+            d=qu.value(3).toInt();
         }
 
         cols=cols.replace('{',"");
@@ -32,10 +34,10 @@ CubeWidget::CubeWidget(int id_cube, QWidget *parent) :
         ex2.setMinimal(true);
         while (ex1.indexIn(cols)!=-1 || ex2.indexIn(cols)!=-1){
             if (ex1.indexIn(cols)!=-1){
-                axes << ex1.cap(1);
+                ax << ex1.cap(1);
                 pos=ex1.indexIn(cols)+ex1.cap(1).size()+2;
             } else if (ex2.indexIn(cols)!=-1){
-                axes << ex2.cap(1);
+                ax << ex2.cap(1);
                 pos=ex2.indexIn(cols)+ex2.cap(1).size();
             } else {
                 pos=-1;
@@ -43,9 +45,9 @@ CubeWidget::CubeWidget(int id_cube, QWidget *parent) :
             cols=cols.mid(pos+1);
         }
     } else {
-        QMessageBox::critical(this,"Error",query.lastError().text(),QMessageBox::Ok);
+        QMessageBox::critical(this,"Error",qu.lastError().text(),QMessageBox::Ok);
     }
-    inital(nam,axes,qu,dec);
+    inital();
 }
 
 CubeWidget::~CubeWidget()
@@ -68,11 +70,10 @@ QDate CubeWidget::getEndDate()
     return ui->dateEditEnd->date();
 }
 
-void CubeWidget::inital(QString head, QStringList axes, QString qu, int dec)
+void CubeWidget::inital()
 {
     ui = new Ui::CubeWidget;
     ui->setupUi(this);
-    query=qu;
     ui->cmdUpd->setIcon(QIcon(QApplication::style()->standardIcon(QStyle::SP_BrowserReload)));
     ui->cmdSave->setIcon(QIcon(QApplication::style()->standardIcon(QStyle::SP_DialogSaveButton)));
 
@@ -85,24 +86,14 @@ void CubeWidget::inital(QString head, QStringList axes, QString qu, int dec)
     ui->dateEditEnd->setCalendarWidget(endCalendarWidget);
     ui->dateEditEnd->setDate(QDate::currentDate());
 
-    axisX = new AxisWidget(axes, this);
-    axisY = new AxisWidget(axes, this);
+    axisX = new AxisWidget(ax, this);
+    axisY = new AxisWidget(ax, this);
     ui->groupBoxX->layout()->addWidget(axisX);
     ui->groupBoxY->layout()->addWidget(axisY);
 
-    this->setWindowTitle(head);
-    //olapmodel = new OlapModel(axes,dec,this);
-    //ui->tableView->setModel(olapmodel);
-    //updQuery();
+    this->setWindowTitle(he);
     connect(ui->cmdUpd,SIGNAL(clicked()),this,SLOT(updQuery()));
-    /*connect(ui->radioButtonSum,SIGNAL(clicked(bool)),olapmodel,SLOT(setTypeSum(bool)));
-    connect(ui->radioButtonAvg,SIGNAL(clicked(bool)),olapmodel,SLOT(setTypeAvg(bool)));
-    connect(ui->radioButtonMin,SIGNAL(clicked(bool)),olapmodel,SLOT(setTypeMin(bool)));
-    connect(ui->radioButtonMax,SIGNAL(clicked(bool)),olapmodel,SLOT(setTypeMax(bool)));
-    connect(axisX,SIGNAL(sigUpd(QStringList)),olapmodel,SLOT(setX(QStringList)));
-    connect(axisY,SIGNAL(sigUpd(QStringList)),olapmodel,SLOT(setY(QStringList)));*/
     connect(ui->cmdSave,SIGNAL(clicked()),this,SLOT(saveXls()));
-    //connect(olapmodel,SIGNAL(sigRefresh()),ui->tableView,SLOT(resizeToContents()));
 
     connect(axisX,SIGNAL(sigUpd(QStringList)),this,SIGNAL(sigUpdX(QStringList)));
     connect(axisY,SIGNAL(sigUpd(QStringList)),this,SIGNAL(sigUpdY(QStringList)));
@@ -115,10 +106,6 @@ void CubeWidget::inital(QString head, QStringList axes, QString qu, int dec)
 
 void CubeWidget::updQuery()
 {
-    /*QString squery=query;
-    squery.replace(":d1","'"+ui->dateEditBeg->date().toString("yyyy-MM-dd")+"'");
-    squery.replace(":d2","'"+ui->dateEditEnd->date().toString("yyyy-MM-dd")+"'");
-    olapmodel->setQuery(squery);*/
     return;
 }
 

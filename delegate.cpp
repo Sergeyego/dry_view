@@ -32,7 +32,7 @@ void ColorDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, con
         QString val;
         QColor c= d->currentColor();
         val=QString::number(c.red())+":"+QString::number(c.green())+":"+QString::number(c.blue());
-        model->setData(index,val);
+        model->setData(index,val,Qt::EditRole);
     }
 }
 

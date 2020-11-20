@@ -183,83 +183,23 @@ void MainWindow::edtOven()
 
 void MainWindow::anDryKvo()
 {
-    QStringList axes;
-    axes.push_back(tr("Печь"));
-    axes.push_back(tr("Марка"));
-    axes.push_back(tr("Диаметр"));
-    axes.push_back(tr("Группа"));
-    axes.push_back(tr("Партия"));
-    axes.push_back(tr("Год"));
-    axes.push_back(tr("Месяц"));
-    axes.push_back(tr("День"));
-    QString query("select o.num, e.marka, d.dim, t.nam, r.n_s, "
-                  "substr(cast(r.dt_beg as char(32)),1,4) as yr, "
-                  "substr(cast(r.dt_beg as char(32)),1,7) as mn, "
-                  "substr(cast(r.dt_beg as char(32)),1,10) as dy, "
-                  "1 "
-                  "from owens_rab as r "
-                  "inner join owens as o on r.id_owen=o.id "
-                  "inner join dry_els as d on r.id_eldim=d.ide "
-                  "inner join elrtr as e on d.id_el=e.id "
-                  "inner join el_types as t on e.id_vid=t.id "
-                  "where r.dt_beg between :d1 and :d2");
-    SingleCubeWidget *kvoCube = new SingleCubeWidget(tr("Количество прокалок"),axes,query,0);
+    SingleCubeWidget *kvoCube = new SingleCubeWidget(8);
+    kvoCube->setAttribute(Qt::WA_DeleteOnClose);
     kvoCube->show();
-    //connect(kvoCube,SIGNAL(sigClose()),kvoCube,SLOT(deleteLater()));
 }
 
 void MainWindow::anDryEnerg()
 {
-    QStringList axes;
-    axes.push_back(tr("Печь"));
-    axes.push_back(tr("Марка"));
-    axes.push_back(tr("Диаметр"));
-    axes.push_back(tr("Группа"));
-    axes.push_back(tr("Партия"));
-    axes.push_back(tr("Год"));
-    axes.push_back(tr("Месяц"));
-    axes.push_back(tr("День"));
-    QString query("select o.num, e.marka, d.dim, t.nam, r.n_s, "
-                  "substr(cast(r.dt_beg as char(32)),1,4) as yr, "
-                  "substr(cast(r.dt_beg as char(32)),1,7) as mn, "
-                  "substr(cast(r.dt_beg as char(32)),1,10) as dy, "
-                  "r.energ "
-                  "from owens_rab as r "
-                  "inner join owens as o on r.id_owen=o.id "
-                  "inner join dry_els as d on r.id_eldim=d.ide "
-                  "inner join elrtr as e on d.id_el=e.id "
-                  "inner join el_types as t on e.id_vid=t.id "
-                  "where r.dt_beg between :d1 and :d2");
-    SingleCubeWidget *energCube = new SingleCubeWidget(tr("Расход электрической энергии на прокалку, кВт*ч"),axes,query,3);
+    SingleCubeWidget *energCube = new SingleCubeWidget(13);
+    energCube->setAttribute(Qt::WA_DeleteOnClose);
     energCube->show();
-    //connect(energCube,SIGNAL(sigClose()),energCube,SLOT(deleteLater()));
 }
 
 void MainWindow::anDryMas()
 {
-    QStringList axes;
-    axes.push_back(tr("Печь"));
-    axes.push_back(tr("Марка"));
-    axes.push_back(tr("Диаметр"));
-    axes.push_back(tr("Группа"));
-    axes.push_back(tr("Партия"));
-    axes.push_back(tr("Год"));
-    axes.push_back(tr("Месяц"));
-    axes.push_back(tr("День"));
-    QString query("select o.num, e.marka, d.dim, t.nam, r.n_s, "
-                  "substr(cast(r.dt_beg as char(32)),1,4) as yr, "
-                  "substr(cast(r.dt_beg as char(32)),1,7) as mn, "
-                  "substr(cast(r.dt_beg as char(32)),1,10) as dy, "
-                  "r.kvo/1000.0 "
-                  "from owens_rab as r "
-                  "inner join owens as o on r.id_owen=o.id "
-                  "inner join dry_els as d on r.id_eldim=d.ide "
-                  "inner join elrtr as e on d.id_el=e.id "
-                  "inner join el_types as t on e.id_vid=t.id "
-                  "where r.dt_beg between :d1 and :d2");
-    SingleCubeWidget *masCube = new SingleCubeWidget(tr("Прокалка электродов, тонн"),axes,query,3);
+    SingleCubeWidget *masCube = new SingleCubeWidget(11);
+    masCube->setAttribute(Qt::WA_DeleteOnClose);
     masCube->show();
-    //connect(masCube,SIGNAL(sigClose()),masCube,SLOT(deleteLater()));
 }
 
 void MainWindow::anDryEnergKg()
@@ -296,58 +236,22 @@ void MainWindow::anDryEnergKg()
                    "inner join el_types as t on e.id_vid=t.id "
                    "where r.dt_beg between :d1 and :d2");
     DoubleCubeWidget *kgCube = new DoubleCubeWidget(tr("Расход электрической энергии на прокалку, кВт*ч/кг"),axes,query1,query2,3);
+    kgCube->setAttribute(Qt::WA_DeleteOnClose);
     kgCube->show();
-    //connect(kgCube,SIGNAL(sigClose()),kgCube,SLOT(deleteLater()));
 }
 
 void MainWindow::anSushKvo()
 {
-    QStringList axes;
-    axes.push_back(tr("Оборудование"));
-    axes.push_back(tr("Год"));
-    axes.push_back(tr("Месяц"));
-    axes.push_back(tr("День"));
-    axes.push_back(tr("Час"));
-    axes.push_back(tr("Минута"));
-    QString query("select o.num, "
-                  "substr(cast(cm.dat_time as char(32)),1,4) as yr, "
-                  "substr(cast(cm.dat_time as char(32)),1,7) as mn, "
-                  "substr(cast(cm.dat_time as char(32)),1,10) as dy, "
-                  "substr(cast(cm.dat_time as char(32)),1,13) as ch, "
-                  "substr(cast(cm.dat_time as char(32)),1,16) as mn, "
-                  "kvs-(select kvs from owens_counts where dat_time=(select COALESCE (max(dat_time),cm.dat_time) from owens_counts where dat_time< cm.dat_time) and id_owen=cm.id_owen) as kvo "
-                  "from owens_counts as cm "
-                  "inner join owens as o on o.id=cm.id_owen "
-                  "where cm.dat_time between :d1 and :d2 "
-                  "order by dat_time");
-    SingleCubeWidget *masCube = new SingleCubeWidget(tr("Сушка электродов, стопки"),axes,query,0);
+    SingleCubeWidget *masCube = new SingleCubeWidget(33);
+    masCube->setAttribute(Qt::WA_DeleteOnClose);
     masCube->show();
-    //connect(masCube,SIGNAL(sigClose()),masCube,SLOT(deleteLater()));
 }
 
 void MainWindow::anSushEnerg()
 {
-    QStringList axes;
-    axes.push_back(tr("Оборудование"));
-    axes.push_back(tr("Год"));
-    axes.push_back(tr("Месяц"));
-    axes.push_back(tr("День"));
-    axes.push_back(tr("Час"));
-    axes.push_back(tr("Минута"));
-    QString query("select o.num, "
-                  "substr(cast(cm.dat_time as char(32)),1,4) as yr, "
-                  "substr(cast(cm.dat_time as char(32)),1,7) as mn, "
-                  "substr(cast(cm.dat_time as char(32)),1,10) as dy, "
-                  "substr(cast(cm.dat_time as char(32)),1,13) as ch, "
-                  "substr(cast(cm.dat_time as char(32)),1,16) as mn, "
-                  "kve-(select kve from owens_counts where dat_time=(select COALESCE (max(dat_time),cm.dat_time) from owens_counts where dat_time< cm.dat_time) and id_owen=cm.id_owen) as kvo "
-                  "from owens_counts as cm "
-                  "inner join owens as o on o.id=cm.id_owen "
-                  "where cm.dat_time between :d1 and :d2 "
-                  "order by dat_time");
-    SingleCubeWidget *masCube = new SingleCubeWidget(tr("Расход энергии на сушку электродов, кВт*ч"),axes,query,0);
-    masCube->show();
-    //connect(masCube,SIGNAL(sigClose()),masCube,SLOT(deleteLater()));
+    SingleCubeWidget *enCube = new SingleCubeWidget(34);
+    enCube->setAttribute(Qt::WA_DeleteOnClose);
+    enCube->show();
 }
 
 void MainWindow::setOst(bool b)

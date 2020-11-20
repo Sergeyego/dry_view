@@ -8,6 +8,7 @@
 #include <QSqlQuery>
 #include <QSortFilterProxyModel>
 #include <QDebug>
+#include "db/dbtablemodel.h"
 
 class ModelOven : public QSqlQueryModel
 {

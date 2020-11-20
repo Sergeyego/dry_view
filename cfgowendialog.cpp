@@ -33,6 +33,7 @@ CfgOwenDialog::CfgOwenDialog(QWidget *parent) :
     modelChannel->addColumn("is_enabled",tr("Включен"));
 
     modelChannel->setSort("owens_trm_channel.number, owens_trm_channel.nam");
+    modelChannel->setColumnFlags(1,Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     ui->tableViewCh->setModel(modelChannel);
     ui->tableViewCh->setColumnHidden(0,true);
@@ -52,7 +53,7 @@ CfgOwenDialog::CfgOwenDialog(QWidget *parent) :
     ui->listViewOven->setModel(modelOven);
     ui->listViewOven->setModelColumn(1);
     push = new DbMapper(ui->listViewOven,this);
-    ui->verticalLayout->addWidget(push);
+    ui->horizontalLayoutMap->insertWidget(0,push);
     push->addMapping(ui->lineEditId,0);
     push->addMapping(ui->lineEditNum,1);
     push->addMapping(ui->lineEditTyp,2);

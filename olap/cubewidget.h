@@ -24,18 +24,19 @@ public:
     QDate getEndDate();
     
 private:
-    void inital(QString head, QStringList axes, QString qu, int dec);
+    void inital();
     Ui::CubeWidget *ui;
-    //OlapModel *olapmodel;
-    QString query;
     AxisWidget *axisX;
     AxisWidget *axisY;
+
+protected:
+    QString query;
     QString he;
     QStringList ax;
     int d;
 
-private slots:
-    void updQuery();
+protected slots:
+    virtual void updQuery();
     void saveXls();
 
 signals:

@@ -6,8 +6,8 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    //QTextCodec *codec = QTextCodec::codecForName("Utf8");
-    //QTextCodec::setCodecForTr(codec);
+    a.setWindowIcon(QIcon(":images/charm.png"));
+
     QSqlDatabase db=QSqlDatabase::addDatabase("QPSQL");
     db.setDatabaseName("neo_rtx");
     db.setHostName("192.168.1.10");
@@ -19,7 +19,6 @@ int main(int argc, char *argv[])
         exit(0);
     }
     MainWindow w;
-    w.setWindowIcon(QIcon(":images/charm.png"));
     w.show();
     return a.exec();
 }
