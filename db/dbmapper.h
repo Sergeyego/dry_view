@@ -51,6 +51,8 @@ public slots:
     void first();
     void last();
     void setCurrentViewRow(int row);
+    void setAddEnable(bool b);
+    void setDelEnable(bool b);
 
 private slots:
     void checkEmpty();

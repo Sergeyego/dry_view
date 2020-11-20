@@ -14,6 +14,7 @@
 #include "dialoggroups.h"
 #include <QPrinter>
 #include <QPrintDialog>
+#include "db/dbmapper.h"
 
 namespace Ui {
 class MainWindow;
@@ -32,14 +33,13 @@ private:
     CfgPlot *cfgPlot;
     PlotData *plotData;
     ModelDry *modelDry;
-    ModelFilterDry *modelFilterDry;
-    QDataWidgetMapper *mapper;
+    DbMapper *mapper;
     ModelOven *modelOven;
     void loadSettings();
     void saveSettings();
 
 private slots:
-    void setCurrentMapperIndex(QModelIndex src_index);
+    void setCurrentProc(int index);
     void setCurrentOven(QModelIndex index);
     void refreshOvenData();
     void refreshDry();

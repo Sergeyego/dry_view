@@ -103,6 +103,8 @@ void DbViewer::keyPressEvent(QKeyEvent *e)
             }
         }
 
+    } else if (sqlModel && e->key()==Qt::Key_Delete && e->modifiers()==Qt::ControlModifier){
+        remove();
     } else {
         QTableView::keyPressEvent(e);
     }

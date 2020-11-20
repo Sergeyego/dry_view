@@ -27,34 +27,36 @@ MainWindow::MainWindow(QWidget *parent) :
     plotData = new PlotData(this);
     ui->verticalLayoutChn->addWidget(plotData);
 
-    modelFilterDry = new ModelFilterDry(this);
-
-    modelDry = new ModelDry(modelFilterDry);
+    modelDry = new ModelDry(this);
     refreshDry();
 
-    modelFilterDry->setSourceModel(modelDry);
-
-    ui->tableViewDry->setModel(modelFilterDry);
+    ui->tableViewDry->setModel(modelDry);
     ui->tableViewDry->setColumnHidden(0,true);
-    ui->tableViewDry->verticalHeader()->hide();
-    ui->tableViewDry->verticalHeader()->setDefaultSectionSize(ui->tableViewDry->verticalHeader()->fontMetrics().height()*1.5);
     ui->tableViewDry->setColumnWidth(1,80);
     ui->tableViewDry->setColumnWidth(2,115);
     ui->tableViewDry->setColumnWidth(3,50);
     ui->tableViewDry->setColumnWidth(4,150);
+    for (int i=5; i<ui->tableViewDry->model()->columnCount(); i++){
+        ui->tableViewDry->setColumnHidden(i,true);
+    }
 
-    mapper = new QDataWidgetMapper(this);
-    mapper->setModel(modelDry);
+    mapper = new DbMapper(ui->tableViewDry,this);
     mapper->addMapping(ui->lineEditT,5);
     mapper->addMapping(ui->lineEditW,6);
     mapper->addMapping(ui->lineEditZms,7);
     mapper->addMapping(ui->lineEditKvo,8);
     mapper->addMapping(ui->lineEditRab,9);
     mapper->addMapping(ui->lineEditEnerg,10);
-    mapper->addMapping(ui->lineEditbeg,2);
-    mapper->addMapping(ui->lineEditend,11);
-    mapper->addMapping(ui->lineEditS,13);
-    mapper->addMapping(ui->lineEditProg,14);
+    mapper->addMapping(ui->dateTimeEditB,2);
+    mapper->addMapping(ui->dateTimeEditE,11);
+    mapper->addMapping(ui->lineEditProg,13);
+    mapper->setAddEnable(false);
+    mapper->setDelEnable(false);
+    mapper->addLock(ui->cmdUpdDry);
+    mapper->addLock(ui->checkBoxMonly);
+    mapper->addLock(ui->checkBoxOst);
+
+    ui->horizontalLayoutMap->insertWidget(0,mapper);
 
     modelOven = new ModelOven(this);
     modelOven->refresh();
@@ -66,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableViewOven->setColumnWidth(2,200);
     ui->tableViewOven->setColumnWidth(3,100);
 
-    connect(ui->tableViewDry->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(setCurrentMapperIndex(QModelIndex)));
+    connect(mapper,SIGNAL(currentIndexChanged(int)),this,SLOT(setCurrentProc(int)));
     connect(ui->tableViewOven->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(setCurrentOven(QModelIndex)));
     connect(ui->cmdUpdOvenData,SIGNAL(clicked(bool)),this,SLOT(refreshOvenData()));
     connect(ui->cmdUpdDry,SIGNAL(clicked(bool)),this,SLOT(refreshDry()));
@@ -82,6 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionSushKwh,SIGNAL(triggered(bool)),this,SLOT(anSushEnerg()));
     connect(ui->checkBoxOst,SIGNAL(clicked(bool)),this,SLOT(setOst(bool)));
     connect(ui->actionGroups,SIGNAL(triggered(bool)),this,SLOT(cfgGroups()));
+    connect(ui->tableViewDry->horizontalHeader(),SIGNAL(sectionClicked(int)),modelDry,SLOT(sort(int)));
 }
 
 MainWindow::~MainWindow()
@@ -104,21 +107,29 @@ void MainWindow::saveSettings()
     settings.setValue("splitter_width",ui->splitter->saveState());
 }
 
-void MainWindow::setCurrentMapperIndex(QModelIndex src_index)
+void MainWindow::setCurrentProc(int index)
 {
-    mapper->setCurrentModelIndex(modelFilterDry->mapToSource(src_index));
-    int id_owrab=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(src_index.row(),0),Qt::EditRole).toInt();
-    QDateTime begTime=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(src_index.row(),2)).toDateTime();
-    QDateTime endTime=modelDry->data(modelDry->index(modelFilterDry->mapToSource(src_index).row(),11)).toDateTime();
-    bool new_format=modelDry->data(modelDry->index(modelFilterDry->mapToSource(src_index).row(),12),Qt::EditRole).toBool();
-    QString own=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(src_index.row(),1)).toString();
-    QString mark=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(src_index.row(),4)).toString();
-    QString part=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(src_index.row(),3)).toString();
-    QString zms=modelDry->data(modelDry->index(modelFilterDry->mapToSource(src_index).row(),7)).toString();
-    QString kvo=modelDry->data(modelDry->index(modelFilterDry->mapToSource(src_index).row(),8)).toString();
-    QString wl=modelDry->data(modelDry->index(modelFilterDry->mapToSource(src_index).row(),6)).toString();
-    QString tl=modelDry->data(modelDry->index(modelFilterDry->mapToSource(src_index).row(),5)).toString();
-    QString tp=modelDry->data(modelDry->index(modelFilterDry->mapToSource(src_index).row(),13)).toString();
+    int id_owrab=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,0),Qt::EditRole).toInt();
+    QDateTime begTime=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,2),Qt::EditRole).toDateTime();
+    QDateTime endTime=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,11),Qt::EditRole).toDateTime();
+    bool new_format=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,12),Qt::EditRole).toBool();
+
+    QString own=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,1),Qt::DisplayRole).toString();
+    QString mark=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,4),Qt::DisplayRole).toString();
+    QString part=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,3),Qt::DisplayRole).toString();
+
+    QString zms=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,7),Qt::DisplayRole).toString();
+    QString kvo=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,8),Qt::DisplayRole).toString();
+    QString wl=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,6),Qt::DisplayRole).toString();
+    QString tl=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,5),Qt::DisplayRole).toString();
+
+    qint64 tpi=begTime.secsTo(endTime);
+    QString tp;
+    if (!endTime.isNull()){
+        tp=QDateTime::fromSecsSinceEpoch(tpi,Qt::OffsetFromUTC).toString("hh:mm:ss");
+    }
+    ui->lineEditS->setText(tp);
+
     Plot::instance()->setbaseTime(begTime);
     plotData->refresh(id_owrab, new_format,ui->checkBoxOst->isChecked());
     QTime t(0,0,0);
@@ -128,14 +139,14 @@ void MainWindow::setCurrentMapperIndex(QModelIndex src_index)
     t=t.addSecs(sec);
     QString vr=(ui->checkBoxOst->isChecked()) ? suf+t.toString("hh:mm:ss") : tp;
     Plot::instance()->setTitle("<FONT SIZE=2>"+own+tr(", ")+mark+tr(", п.")+part+tr(", замес ")+zms+tr(", ")+"<br>"+
-                                           kvo+tr("кг, w0=")+wl+tr(", t0=")+tl+",<br>"+
+                               kvo+tr("кг, w0=")+wl+tr(", t0=")+tl+",<br>"+
                                begTime.toString("dd.MM.yy hh:mm:ss")+" - "+endTime.toString("dd.MM.yy hh:mm:ss")+" ("+vr+")"+"</FONT>");
 }
 
 void MainWindow::setCurrentOven(QModelIndex index)
 {
     int id_oven=ui->tableViewOven->model()->data(ui->tableViewOven->model()->index(index.row(),0),Qt::EditRole).toInt();
-    QString nam=ui->tableViewOven->model()->data(ui->tableViewOven->model()->index(index.row(),1)).toString();
+    QString nam=ui->tableViewOven->model()->data(ui->tableViewOven->model()->index(index.row(),1),Qt::DisplayRole).toString();
     Plot::instance()->setbaseTime(ui->dateTimeEditBeg->dateTime());
     plotData->refresh(ui->dateTimeEditBeg->dateTime(),ui->dateTimeEditEnd->dateTime(), id_oven);
     Plot::instance()->setTitle("<FONT SIZE=2>"+nam+"<br>"+ui->dateTimeEditBeg->dateTime().toString("dd.MM.yy hh:mm:ss")+
@@ -254,9 +265,9 @@ void MainWindow::anSushEnerg()
     enCube->show();
 }
 
-void MainWindow::setOst(bool b)
+void MainWindow::setOst(bool /*b*/)
 {
-    setCurrentMapperIndex(ui->tableViewDry->currentIndex());
+    setCurrentProc(ui->tableViewDry->currentIndex().row());
 }
 
 void MainWindow::cfgGroups()

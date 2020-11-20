@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     olap/doubleolapmodel.cpp \
     olap/olapmodel.cpp \
     olap/singlecubewidget.cpp \
-    olap/tableview.cpp
+    olap/tableview.cpp \
+    rels.cpp
 
 HEADERS  += \
     cfgplot.h \
@@ -60,7 +61,8 @@ HEADERS  += \
     olap/doubleolapmodel.h \
     olap/olapmodel.h \
     olap/singlecubewidget.h \
-    olap/tableview.h
+    olap/tableview.h \
+    rels.h
 
 FORMS    += \
     cfgplot.ui \

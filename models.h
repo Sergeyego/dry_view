@@ -9,6 +9,7 @@
 #include <QSortFilterProxyModel>
 #include <QDebug>
 #include "db/dbtablemodel.h"
+#include "rels.h"
 
 class ModelOven : public QSqlQueryModel
 {
@@ -23,43 +24,16 @@ public slots:
     
 };
 
-class ModelDry : public QSqlQueryModel
+class ModelDry : public DbTableModel
 {
     Q_OBJECT
 public:
     explicit ModelDry(QObject *parent = 0);
-    QVariant data(const QModelIndex &item, int role=Qt::DisplayRole) const;
-    bool removeRows(int row, int count, const QModelIndex &parent=QModelIndex());
-signals:
+    QVariant data(const QModelIndex &index, int role) const;
 
 public slots:
     void refresh(QDate dBeg, QDate dEnd, bool l_month);
-private:
-    QDate begDate;
-    QDate endDate;
-    bool month;
-
-};
-
-class ModelFilterDry : public QSortFilterProxyModel
-{
-    Q_OBJECT
-public:
-    explicit ModelFilterDry(QObject *parent=0);
-    bool filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const;
-};
-
-class ModelDryData : public QSqlQueryModel
-{
-    Q_OBJECT
-public:
-    explicit ModelDryData(QObject *parent = 0);
-
-signals:
-
-public slots:
-    void refresh(int id_dry);
-
+    void sort(int section);
 };
 
 #endif // MODELS_H

@@ -155,6 +155,16 @@ void DbMapper::setCurrentViewRow(int row)
     viewer->scrollTo(viewer->currentIndex());
 }
 
+void DbMapper::setAddEnable(bool b)
+{
+    cmdNew->setHidden(!b);
+}
+
+void DbMapper::setDelEnable(bool b)
+{
+    cmdDel->setHidden(!b);
+}
+
 
 void DbMapper::slotNew()
 {

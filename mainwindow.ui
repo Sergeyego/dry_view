@@ -133,7 +133,7 @@
            <item>
             <widget class="QLineEdit" name="lineEditT">
              <property name="readOnly">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
             </widget>
            </item>
@@ -147,7 +147,7 @@
            <item>
             <widget class="QLineEdit" name="lineEditW">
              <property name="readOnly">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
             </widget>
            </item>
@@ -161,7 +161,7 @@
            <item>
             <widget class="QLineEdit" name="lineEditZms">
              <property name="readOnly">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
             </widget>
            </item>
@@ -175,7 +175,7 @@
            <item>
             <widget class="QLineEdit" name="lineEditKvo">
              <property name="readOnly">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
             </widget>
            </item>
@@ -203,13 +203,6 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="lineEditbeg">
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="2">
             <widget class="QLabel" name="label_11">
              <property name="text">
@@ -231,13 +224,6 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="lineEditend">
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="2">
             <widget class="QLabel" name="label_12">
              <property name="text">
@@ -248,7 +234,7 @@
            <item row="1" column="3">
             <widget class="QLineEdit" name="lineEditEnerg">
              <property name="readOnly">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
             </widget>
            </item>
@@ -259,17 +245,37 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="lineEditRab">
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
            <item row="2" column="2">
             <widget class="QLabel" name="label_14">
              <property name="text">
               <string>Прогр.</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QDateTimeEdit" name="dateTimeEditB">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="displayFormat">
+              <string>dd.MM.yy HH:mm</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDateTimeEdit" name="dateTimeEditE">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+             <property name="displayFormat">
+              <string>dd.MM.yy HH:mm</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="lineEditRab">
+             <property name="readOnly">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -279,6 +285,23 @@
               <bool>true</bool>
              </property>
             </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayoutMap">
+           <item>
+            <spacer name="horizontalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
           </layout>
          </item>

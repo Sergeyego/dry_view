@@ -20,94 +20,70 @@ void ModelOven::refresh()
 }
 
 
-ModelDry::ModelDry(QObject *parent) :
-    QSqlQueryModel(parent)
+ModelDry::ModelDry(QObject *parent) : DbTableModel("owens_rab", parent)
 {
+    addColumn("id","id");
+    addColumn("id_owen",QString::fromUtf8("Печь"),Rels::instance()->relOwen);
+    addColumn("dt_beg",QString::fromUtf8("Дата-время"));
+    addColumn("n_s",QString::fromUtf8("Парт."));
+    addColumn("id_eldim",QString::fromUtf8("Марка-диам."),Rels::instance()->relElDim);
+    addColumn("t0",QString::fromUtf8("Нач.темп."));
+    addColumn("w0",QString::fromUtf8("Нач.влаж."));
+    addColumn("zms",QString::fromUtf8("Замес"));
+    addColumn("kvo",QString::fromUtf8("К-во"));
+    addColumn("id_rab",QString::fromUtf8("Работник"),Rels::instance()->relRab);
+    addColumn("energ",QString::fromUtf8("Энерг."));
+    addColumn("dt_end",QString::fromUtf8("Конец"));
+    addColumn("new_format",QString::fromUtf8("Нов.формат"));
+    addColumn("id_prog",QString::fromUtf8("Прог."),Rels::instance()->relProg);
+
+    setSuffix("inner join owens as o on o.id = owens_rab.id_owen "
+              "inner join dry_els as d on d.ide = owens_rab.id_eldim");
+
+    setSort("owens_rab.dt_beg");
 
 }
 
-QVariant ModelDry::data(const QModelIndex &item, int role) const
+QVariant ModelDry::data(const QModelIndex &index, int role) const
 {
-    QVariant value= QSqlQueryModel::data(item,role);
-    if (role==Qt::DisplayRole || role==Qt::EditRole){
-        if (value.isNull()) {
-            value=QString("");
-        } else if ((item.column()==2 || item.column()==11) && role==Qt::EditRole){
-            value=value.toDateTime().toString("dd.MM.yy hh:mm");
-        } else if (item.column()==10){
-            return QLocale().toString(value.toDouble(),'f',3);
-        }
-    } else if (role==Qt::BackgroundRole){
-        if (!data(index(item.row(),11)).toString().isEmpty())
+    if (role==Qt::BackgroundRole){
+        if (!this->data(this->index(index.row(),11),Qt::EditRole).isNull())
             return QVariant(QColor(170,255,170));
     }
-    return value;
+    return DbTableModel::data(index,role);
 }
 
-bool ModelDry::removeRows(int row, int count, const QModelIndex &parent)
-{
-    if (row>=rowCount() || row<0) return false;
-    int id=data(index(row,0),Qt::EditRole).toInt();
-    bool ok=false;
-    QSqlQuery query;
-    query.prepare("delete from owens_rab where id= ?");
-    query.addBindValue(id);
-    ok=query.exec();
-    if (!ok){
-        QMessageBox::critical(NULL,"Error",query.lastError().text(),QMessageBox::Ok);
-    } else {
-        refresh(begDate,endDate,month);
-    }
-    return ok;
-}
 
 void ModelDry::refresh(QDate dBeg, QDate dEnd, bool l_month)
 {
-    QSqlQuery query;
-    begDate=dBeg;
-    endDate=dEnd;
-    month=l_month;
     QDate date2 =QDate::currentDate().addDays(-30);
-    QString suff;
-    suff = l_month ? ("where r.dt_beg >= '"+date2.toString("yyyy-MM-dd")+"' ") :
-                     ("where r.dt_beg between '"+dBeg.toString("yyyy-MM-dd")+"' and '"+dEnd.toString("yyyy-MM-dd")+"' ");
+    QString flt;
+    flt = l_month ? ("dt_beg >= '"+date2.toString("yyyy-MM-dd")+"' ") :
+                    ("dt_beg between '"+dBeg.toString("yyyy-MM-dd")+"' and '"+dEnd.toString("yyyy-MM-dd")+"' ");
+    setFilter(flt);
+    select();
 
-    query.prepare("select r.id, o.num, r.dt_beg, r.n_s, e.fnam, r.t0, r.w0, r.zms, r.kvo, "
-             "rb.snam, r.energ, r.dt_end, r.new_format, r.dt_end-r.dt_beg, d.nam "
-             "from owens_rab as r "
-             "inner join owens as o on o.id=r.id_owen "
-             "inner join dry_els as e on r.id_eldim=e.ide "
-             "inner join rab_rab as rb on rb.id=r.id_rab "
-             "inner join dry_reg as d on d.id=r.id_prog "
-             +suff+
-             "order by o.num, dt_beg");
-    if (query.exec()){
-        setQuery(query);
-        setHeaderData(1, Qt::Horizontal,tr("Печь"));
-        setHeaderData(2, Qt::Horizontal,tr("Дата-время"));
-        setHeaderData(3, Qt::Horizontal,tr("Парт."));
-        setHeaderData(4, Qt::Horizontal,tr("Марка-диам."));
-    } else {
-        QMessageBox::critical(NULL,"Error",query.lastError().text(),QMessageBox::Ok);
+}
+
+void ModelDry::sort(int section)
+{
+    QString s="owens_rab.dt_beg";
+    if (section==1){
+        s="o.num, owens_rab.dt_beg";
+    } else if (section==3){
+        s="owens_rab.n_s, owens_rab.dt_beg";
+    } else if (section==4){
+        s="d.fnam, owens_rab.dt_beg";
     }
+    if (DbTableModel::sort==s){
+        int pos=s.indexOf(",");
+        if (pos!=-1){
+            s=s.insert(pos," desc");
+        } else {
+            s+=" desc";
+        }
+    }
+    setSort(s);
+    select();
 }
 
-
-ModelFilterDry::ModelFilterDry(QObject *parent):QSortFilterProxyModel(parent)
-{
-}
-
-bool ModelFilterDry::filterAcceptsColumn(int source_column, const QModelIndex &source_parent) const
-{
-    return source_column<5;
-}
-
-
-ModelDryData::ModelDryData(QObject *parent) : QSqlQueryModel(parent)
-{
-}
-
-void ModelDryData::refresh(int id_dry)
-{
-
-}
