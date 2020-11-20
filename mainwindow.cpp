@@ -107,6 +107,16 @@ void MainWindow::saveSettings()
     settings.setValue("splitter_width",ui->splitter->saveState());
 }
 
+QString MainWindow::secToStr(qint64 sec)
+{
+    if (sec==0) return QString();
+    QTime t(0,0,0);
+    int d = sec / 86400;
+    QString suf = (d>0)? QString::number(d)+QString::fromUtf8(" д ") : QString();
+    t=t.addSecs(sec);
+    return suf+t.toString("hh:mm:ss");
+}
+
 void MainWindow::setCurrentProc(int index)
 {
     int id_owrab=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,0),Qt::EditRole).toInt();
@@ -124,20 +134,14 @@ void MainWindow::setCurrentProc(int index)
     QString tl=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,5),Qt::DisplayRole).toString();
 
     qint64 tpi=begTime.secsTo(endTime);
-    QString tp;
-    if (!endTime.isNull()){
-        tp=QDateTime::fromSecsSinceEpoch(tpi,Qt::OffsetFromUTC).toString("hh:mm:ss");
-    }
+    QString tp=secToStr(tpi);
     ui->lineEditS->setText(tp);
 
     Plot::instance()->setbaseTime(begTime);
     plotData->refresh(id_owrab, new_format,ui->checkBoxOst->isChecked());
-    QTime t(0,0,0);
     double sec=Plot::instance()->canvasMap(QwtPlot::xBottom).s2();
-    int d = sec / 86400;
-    QString suf = (d>0)? QString::number(d)+QString::fromUtf8(" д ") : QString();
-    t=t.addSecs(sec);
-    QString vr=(ui->checkBoxOst->isChecked()) ? suf+t.toString("hh:mm:ss") : tp;
+
+    QString vr=(ui->checkBoxOst->isChecked()) ? secToStr(sec) : tp;
     Plot::instance()->setTitle("<FONT SIZE=2>"+own+tr(", ")+mark+tr(", п.")+part+tr(", замес ")+zms+tr(", ")+"<br>"+
                                kvo+tr("кг, w0=")+wl+tr(", t0=")+tl+",<br>"+
                                begTime.toString("dd.MM.yy hh:mm:ss")+" - "+endTime.toString("dd.MM.yy hh:mm:ss")+" ("+vr+")"+"</FONT>");

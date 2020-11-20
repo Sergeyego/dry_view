@@ -37,6 +37,7 @@ private:
     ModelOven *modelOven;
     void loadSettings();
     void saveSettings();
+    QString secToStr(qint64 sec);
 
 private slots:
     void setCurrentProc(int index);
