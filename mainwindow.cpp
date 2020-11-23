@@ -28,7 +28,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->verticalLayoutChn->addWidget(plotData);
 
     modelDry = new ModelDry(this);
-    refreshDry();
 
     ui->tableViewDry->setModel(modelDry);
     ui->tableViewDry->setColumnHidden(0,true);
@@ -47,8 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
     mapper->addMapping(ui->lineEditKvo,8);
     mapper->addMapping(ui->lineEditRab,9);
     mapper->addMapping(ui->lineEditEnerg,10);
-    mapper->addMapping(ui->dateTimeEditB,2);
-    mapper->addMapping(ui->dateTimeEditE,11);
+    mapper->addMapping(ui->lineEditDBeg,2);
+    mapper->addMapping(ui->lineEditDEnd,11);
     mapper->addMapping(ui->lineEditProg,13);
     mapper->setAddEnable(false);
     mapper->setDelEnable(false);
@@ -85,6 +84,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->checkBoxOst,SIGNAL(clicked(bool)),this,SLOT(setOst(bool)));
     connect(ui->actionGroups,SIGNAL(triggered(bool)),this,SLOT(cfgGroups()));
     connect(ui->tableViewDry->horizontalHeader(),SIGNAL(sectionClicked(int)),modelDry,SLOT(sort(int)));
+
+    refreshDry();
 }
 
 MainWindow::~MainWindow()
@@ -167,6 +168,9 @@ void MainWindow::refreshDry()
     bool b=ui->checkBoxMonly->isChecked();
     ui->dateEditBeg->setEnabled(!b);
     ui->dateEditEnd->setEnabled(!b);
+    if (!modelDry->isEmpty()){
+        Rels::instance()->refresh();
+    }
     modelDry->refresh(ui->dateEditBeg->date(),ui->dateEditEnd->date(),b);
 }
 
@@ -194,6 +198,7 @@ void MainWindow::edtOven()
     CfgOwenDialog d;
     d.exec();
     modelOven->refresh();
+    Rels::instance()->relOwen->refreshModel();
 }
 
 void MainWindow::anDryKvo()

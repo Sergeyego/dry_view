@@ -114,7 +114,7 @@ void DbDelegate::setEditorData ( QWidget * editor, const QModelIndex & index ) c
             }
         }
         QVariant dat=sqlModel->data(index,Qt::EditRole);
-        if (sqlModel->columnType(index.column()==QMetaType::QDate)){
+        if (sqlModel->columnType(index.column())==QMetaType::QDate){
             CustomDateEdit *dateEdit = qobject_cast<CustomDateEdit *>(editor);
             if (dateEdit){
                 if (dat.isNull()){
@@ -143,7 +143,11 @@ void DbDelegate::setEditorData ( QWidget * editor, const QModelIndex & index ) c
             if (dat.isNull()){
                 line->clear();
             } else {
-                line->setText(dat.toString());
+                if (sqlModel->columnType(index.column())==QMetaType::QDateTime){
+                    line->setText(dat.toDateTime().toString("dd.MM.yyyy hh:mm"));
+                } else {
+                    line->setText(dat.toString());
+                }
             }
             return;
         }
@@ -194,6 +198,11 @@ void DbDelegate::setModelData ( QWidget * editor, QAbstractItemModel * model, co
             if (le){
                 if (le->text().isEmpty()) {
                     sqlModel->setData(index,sqlModel->nullVal(index.column()),Qt::EditRole);
+                    return;
+                }
+                if (sqlModel->columnType(index.column())==QMetaType::QDateTime){
+                    QDateTime tm=QDateTime::fromString(le->text(),QString("dd.MM.yyyy hh:mm"));
+                    sqlModel->setData(index,tm,Qt::EditRole);
                     return;
                 }
             }
