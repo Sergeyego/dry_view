@@ -132,9 +132,10 @@ QString MainWindow::getSensorInfo(int id_owen, QDate date)
                   "group by otcs2.id_channel) as z on z.dat=otcs.dat and z.id_channel=otcs.id_channel "
                   "inner join owens_trm_channel otc on otc.id=otcs.id_channel "
                   "inner join owens o on o.id = otc.id_owen "
-                  "where otc.is_enabled=true and o.id = :id_ow ");
+                  "where otc.is_enabled=true and o.id = :id_ow and otcs.dat_end >= :dat2 ");
     query.bindValue(":dat",date);
     query.bindValue(":id_ow",id_owen);
+    query.bindValue(":dat2",date);
     if (query.exec()){
         while (query.next()){
             info+="<br>";
