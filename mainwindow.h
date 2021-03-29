@@ -38,6 +38,7 @@ private:
     void loadSettings();
     void saveSettings();
     QString secToStr(qint64 sec);
+    QString getSensorInfo(int id_owen, QDate date);
 
 private slots:
     void setCurrentProc(int index);

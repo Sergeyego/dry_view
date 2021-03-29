@@ -121,9 +121,39 @@ QString MainWindow::secToStr(qint64 sec)
     return suf+t.toString("hh:mm:ss");
 }
 
+QString MainWindow::getSensorInfo(int id_owen, QDate date)
+{
+    QString info;
+    QSqlQuery query;
+    query.prepare("select otc.nam, otcs.nam, otcs.num, otcs.dat_pov, otcs.dat_end from owens_trm_channel_sensor otcs "
+                  "inner join "
+                  "(select otcs2.id_channel, max(otcs2.dat) as dat from owens_trm_channel_sensor otcs2 "
+                  "where otcs2.dat <= :dat "
+                  "group by otcs2.id_channel) as z on z.dat=otcs.dat and z.id_channel=otcs.id_channel "
+                  "inner join owens_trm_channel otc on otc.id=otcs.id_channel "
+                  "inner join owens o on o.id = otc.id_owen "
+                  "where otc.is_enabled=true and o.id = :id_ow ");
+    query.bindValue(":dat",date);
+    query.bindValue(":id_ow",id_owen);
+    if (query.exec()){
+        while (query.next()){
+            info+="<br>";
+            info+=query.value(0).toString()+tr(": датчик ");
+            info+=query.value(1).toString()+tr(" №");
+            info+=query.value(2).toString()+tr(" поверка до ");
+            info+=query.value(4).toDate().toString("dd.MM.yyyy")+tr(";");
+        }
+    } else {
+        QMessageBox::critical(this,"Error",query.lastError().text(),QMessageBox::Ok);
+    }
+    return info;
+}
+
 void MainWindow::setCurrentProc(int index)
 {
     int id_owrab=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,0),Qt::EditRole).toInt();
+    int id_own=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,1),Qt::EditRole).toInt();
+
     QDateTime begTime=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,2),Qt::EditRole).toDateTime();
     QDateTime endTime=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,11),Qt::EditRole).toDateTime();
     bool new_format=ui->tableViewDry->model()->data(ui->tableViewDry->model()->index(index,12),Qt::EditRole).toBool();
@@ -146,9 +176,11 @@ void MainWindow::setCurrentProc(int index)
     double sec=Plot::instance()->canvasMap(QwtPlot::xBottom).s2();
 
     QString vr=(ui->checkBoxOst->isChecked()) ? secToStr(sec) : tp;
-    Plot::instance()->setTitle("<FONT SIZE=2>"+own+tr(", ")+mark+tr(", п.")+part+tr(", замес ")+zms+tr(", ")+"<br>"+
-                               kvo+tr("кг, w0=")+wl+tr(", t0=")+tl+",<br>"+
-                               begTime.toString("dd.MM.yy hh:mm:ss")+" - "+endTime.toString("dd.MM.yy hh:mm:ss")+" ("+vr+")"+"</FONT>");
+    QString title="<FONT SIZE=2>"+own+tr(", ")+mark+tr(", п.")+part+tr(", замес ")+zms+tr(", ")+"<br>"+
+            kvo+tr("кг, w0=")+wl+tr(", t0=")+tl+",<br>"+
+            begTime.toString("dd.MM.yy hh:mm:ss")+" - "+endTime.toString("dd.MM.yy hh:mm:ss")+" ("+vr+")"+"</FONT>";
+    title+="<FONT SIZE=1>"+getSensorInfo(id_own,begTime.date())+"</FONT>";
+    Plot::instance()->setTitle(title);
 }
 
 void MainWindow::setCurrentOven(QModelIndex index)
@@ -158,7 +190,8 @@ void MainWindow::setCurrentOven(QModelIndex index)
     Plot::instance()->setbaseTime(ui->dateTimeEditBeg->dateTime());
     plotData->refresh(ui->dateTimeEditBeg->dateTime(),ui->dateTimeEditEnd->dateTime(), id_oven);
     Plot::instance()->setTitle("<FONT SIZE=2>"+nam+"<br>"+ui->dateTimeEditBeg->dateTime().toString("dd.MM.yy hh:mm:ss")+
-                               " - "+ui->dateTimeEditEnd->dateTime().toString("dd.MM.yy hh:mm:ss")+"</FONT>");
+                               " - "+ui->dateTimeEditEnd->dateTime().toString("dd.MM.yy hh:mm:ss")+"</FONT>"+
+                               "<FONT SIZE=1>"+getSensorInfo(id_oven,ui->dateTimeEditBeg->dateTime().date())+"</FONT>");
 }
 
 void MainWindow::refreshOvenData()

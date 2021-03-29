@@ -162,7 +162,24 @@
         </widget>
        </item>
        <item>
-        <widget class="DbViewer" name="tableViewCh"/>
+        <widget class="DbViewer" name="tableViewCh">
+         <property name="selectionMode">
+          <enum>QAbstractItemView::SingleSelection</enum>
+         </property>
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_11">
+         <property name="text">
+          <string>Датчик температуры на канале</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="DbViewer" name="tableViewSensor"/>
        </item>
        <item>
         <spacer name="verticalSpacer">

@@ -23,9 +23,11 @@ private:
     DbRelation *relGroups;
     DbTableModel *modelOven;
     DbTableModel *modelChannel;
+    DbTableModel *modelSensor;
     DbMapper *push;
 private slots:
     void setCurrentOven(QModelIndex index);
+    void setCurrentOvenSensor(QModelIndex index);
 };
 
 #endif // CFGOWENDIALOG_H

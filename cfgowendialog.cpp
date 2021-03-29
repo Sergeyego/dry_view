@@ -6,6 +6,16 @@ CfgOwenDialog::CfgOwenDialog(QWidget *parent) :
     ui(new Ui::CfgOwenDialog)
 {
     ui->setupUi(this);
+
+    modelSensor = new DbTableModel("owens_trm_channel_sensor",this);
+    modelSensor->addColumn("id_channel",tr("id_channel"));
+    modelSensor->addColumn("dat",tr("Дата установки"));
+    modelSensor->addColumn("nam",tr("Марка датчика"));
+    modelSensor->addColumn("dat_pov",tr("Поверка"));
+    modelSensor->addColumn("dat_end",tr("Оконч.поверки"));
+    modelSensor->addColumn("num",tr("Зав.номер"));
+    modelSensor->setSort("dat");
+
     relGroups = new DbRelation(new DbRelationalModel("select id, nam from owens_groups order by id",this),0,1,this);
     modelOven = new DbTableModel("owens",this);
     modelOven->addColumn("id","id");
@@ -34,6 +44,14 @@ CfgOwenDialog::CfgOwenDialog(QWidget *parent) :
 
     modelChannel->setSort("owens_trm_channel.number, owens_trm_channel.nam");
     modelChannel->setColumnFlags(1,Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    ui->tableViewSensor->setModel(modelSensor);
+    ui->tableViewSensor->setColumnHidden(0,true);
+    ui->tableViewSensor->setColumnWidth(1,110);
+    ui->tableViewSensor->setColumnWidth(2,140);
+    ui->tableViewSensor->setColumnWidth(3,110);
+    ui->tableViewSensor->setColumnWidth(4,110);
+    ui->tableViewSensor->setColumnWidth(5,140);
 
     ui->tableViewCh->setModel(modelChannel);
     ui->tableViewCh->setColumnHidden(0,true);
@@ -67,6 +85,7 @@ CfgOwenDialog::CfgOwenDialog(QWidget *parent) :
     push->addLock(ui->tableViewCh);
 
     connect(ui->listViewOven->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(setCurrentOven(QModelIndex)));
+    connect(ui->tableViewCh->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(setCurrentOvenSensor(QModelIndex)));
 }
 
 CfgOwenDialog::~CfgOwenDialog()
@@ -80,5 +99,15 @@ void CfgOwenDialog::setCurrentOven(QModelIndex index)
     modelChannel->setFilter("owens_trm_channel.id_owen = "+QString::number(id_oven));
     modelChannel->setDefaultValue(0,id_oven);
     modelChannel->select();
-    //qDebug()<<id_oven;
+    if (modelChannel->rowCount()){
+        ui->tableViewCh->selectRow(0);
+    }
+}
+
+void CfgOwenDialog::setCurrentOvenSensor(QModelIndex index)
+{
+    int id_channel=ui->tableViewCh->model()->data(ui->tableViewCh->model()->index(index.row(),1),Qt::EditRole).toInt();
+    modelSensor->setFilter("owens_trm_channel_sensor.id_channel = "+QString::number(id_channel));
+    modelSensor->setDefaultValue(0,id_channel);
+    modelSensor->select();
 }
