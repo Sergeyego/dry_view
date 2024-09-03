@@ -153,9 +153,9 @@ void SrcChannel::updDataPlot(int id_channel, int id_owrab)
 void SrcChannel::updDataPlot(int id_channel, QDateTime dBeg, QDateTime dEnd)
 {
     QSqlQuery dataquery;
-    dataquery.prepare("select ust, val, dat_time, pwr from owens_data_new where dat_time between :d1 and :d2 and id_channel= :idch order by dat_time");
-    dataquery.bindValue(":d1", dBeg);
-    dataquery.bindValue(":d2", dEnd);
+    dataquery.prepare("select ust, val, dat_time, pwr from owens_data_new where dat_time between :d1 and :d2 and id_channel = :idch order by dat_time");
+    dataquery.bindValue(":d1", dBeg.toString("yyyy-MM-dd hh:mm:ss"));
+    dataquery.bindValue(":d2", dEnd.toString("yyyy-MM-dd hh:mm:ss"));
     dataquery.bindValue(":idch", id_channel);
     if (dataquery.exec() && srcUst && srcVal && srcPwr){
         int interval=Plot::instance()->getInterval();
