@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>700</height>
+    <width>998</width>
+    <height>698</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -259,13 +259,6 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="lineEditDEnd">
-             <property name="readOnly">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="0">
             <widget class="QLabel" name="label_9">
              <property name="text">
@@ -274,7 +267,14 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QLineEdit" name="lineEditDBeg">
+            <widget class="QDateTimeEdit" name="dateTimeEditBegProcBeg">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDateTimeEdit" name="dateTimeEditProcEnd">
              <property name="readOnly">
               <bool>true</bool>
              </property>
@@ -398,8 +398,8 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>478</width>
-              <height>606</height>
+              <width>480</width>
+              <height>608</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -438,8 +438,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1000</width>
-     <height>22</height>
+     <width>998</width>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

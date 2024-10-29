@@ -46,8 +46,8 @@ MainWindow::MainWindow(bool ro, QWidget *parent) :
     mapper->addMapping(ui->lineEditKvo,8);
     mapper->addMapping(ui->lineEditRab,9);
     mapper->addMapping(ui->lineEditEnerg,10);
-    mapper->addMapping(ui->lineEditDBeg,2);
-    mapper->addMapping(ui->lineEditDEnd,11);
+    mapper->addMapping(ui->dateTimeEditBegProcBeg,2);
+    mapper->addMapping(ui->dateTimeEditProcEnd,11);
     mapper->addMapping(ui->lineEditProg,13);
     mapper->setAddEnable(false);
     mapper->setDelEnable(false);

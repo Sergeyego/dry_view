@@ -308,7 +308,11 @@ bool DbTableModel::insertDb()
     query.prepare(qu);
     for (int i=0; i<modelData->columnCount(); i++){
         if (!tmpRow[i].isNull()){
-            query.bindValue(":"+modelData->column(i)->name,tmpRow.at(i));
+            if (columnType(i)==QVariant::DateTime){
+                query.bindValue(":"+modelData->column(i)->name,tmpRow.at(i).toDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+            } else {
+                query.bindValue(":"+modelData->column(i)->name,tmpRow.at(i));
+            }
         }
     }
     //qDebug()<</*query.executedQuery();*/qu;
@@ -360,7 +364,11 @@ bool DbTableModel::updateDb()
     query.prepare(qu);
     for (int i=0; i<modelData->columnCount(); i++){
         if(newRow[i]!=oldRow[i]){
-            query.bindValue(":new"+modelData->column(i)->name,newRow[i]);
+            if (columnType(i)==QVariant::DateTime){
+                query.bindValue(":new"+modelData->column(i)->name,newRow[i].toDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+            } else {
+                query.bindValue(":new"+modelData->column(i)->name,newRow[i]);
+            }
         }
         if (pkList.contains(modelData->column(i)->name)) {
             query.bindValue(":pk"+modelData->column(i)->name,oldRow[i]);
